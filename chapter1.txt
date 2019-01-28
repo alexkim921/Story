@@ -1,0 +1,88 @@
+import Foundation
+
+//if this variable is true, X is playing. if it is false, O is playing. X always begins first.
+var gamePlayerTracker : Bool! = true
+//cases of states of a given tile
+enum Tile {
+    case X
+    case O
+    case isBlank
+    case isInvalid
+}
+//Shows whether X or O won
+
+enum GameState {
+    case XWon
+    case OWon
+    case StillPlaying
+}
+struct Board {
+    
+    public var takenByO: [Int]? = []
+    public var takenByX: [Int]? = []
+    //all possible win combinations- however there were errors on certain combinations
+    
+    private let possibleWinCombinations =
+        ["Optional([0, 1, 2])",
+         "Optional([0, 3, 6])",
+         "Optional([0, 4, 8])",
+         "Optional([1, 4, 7])",
+         "Optional([2, 5, 8])",
+         "Optional([3, 4, 5])",
+         "Optional([6, 7, 8])",
+         "Optional([2, 4, 7])"]
+    //Takes the sender.tag value of the button pressed and outputs the player who pressed the tile
+    
+    mutating func checkTile(tester: Int) -> Tile {
+        if gamePlayerTracker == true {
+            //if X is playing.
+            takenByX?.append(tester)
+            print("X played.")
+            gamePlayerTracker = false
+            return .X
+        }
+            
+        else if gamePlayerTracker == false {
+            //if O is playing.
+            takenByO?.append(tester)
+            print("O played.")
+            gamePlayerTracker = true
+            return .O
+        }
+        else {
+            //Should not occur
+            print("returned isInvalid")
+            return .isInvalid
+        }
+    }
+    // function that constantly checks if there is a winner after every move.
+    func checkForWinner() -> GameState {
+        //turns the Int array into one string
+        var testForO = "\(String(describing: takenByO))"
+        var testForX = "\(takenByX)"
+        print("O owns \(testForO)")
+        print("X owns \(testForX)")
+        //if one of the strings are listed under the array possibleWinCombinations, tells the controller to update the label
+        
+        if possibleWinCombinations.contains(testForO) {
+            print("Winner is O")
+            return .OWon
+        }
+        else if possibleWinCombinations.contains(testForX) {
+            print("Winner is X")
+            return .XWon
+        }
+        else {
+            return .StillPlaying
+        }
+    }
+    //Reset function
+    mutating func reset() {
+        takenByO?.removeAll()
+        takenByX?.removeAll()
+        gamePlayerTracker = true
+    }
+    init() {
+        gamePlayerTracker = true
+    }
+}
